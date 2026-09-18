@@ -133,35 +133,6 @@ composite key).
 `DataLoader._validate_composite_key` (Phase 2.1) so no downstream code can
 silently join on `uniqueid` alone.
 
-### 1.11 — Correlation matrix (numeric + binarized features)
-
-Pearson correlation over `age_of_respondent`, `household_size`, `year`,
-and binarized (0/1) `bank_account`, `cellphone_access`, `location_type`,
-`gender_of_respondent`:
-
-| | age | hh_size | year | bank_acct | cellphone | urban | male |
-|---|---|---|---|---|---|---|---|
-| age | 1.00 | -0.13 | -0.02 | 0.02 | -0.10 | -0.05 | 0.01 |
-| household_size | -0.13 | 1.00 | -0.05 | -0.03 | 0.09 | -0.26 | 0.01 |
-| year | -0.02 | -0.05 | 1.00 | 0.11 | -0.07 | 0.21 | 0.00 |
-| bank_account | 0.02 | -0.03 | 0.11 | 1.00 | 0.21 | 0.09 | 0.12 |
-| cellphone_access | -0.10 | 0.09 | -0.07 | 0.21 | 1.00 | -0.09 | 0.10 |
-| location_urban | -0.05 | -0.26 | 0.21 | 0.09 | -0.09 | 1.00 | 0.01 |
-| gender_male | 0.01 | 0.01 | 0.00 | 0.12 | 0.10 | 0.01 | 1.00 |
-
-`job_type`, `education_level`, and `relationship_with_head` are excluded
-— they're nominal with no natural 0/1 or ordinal encoding, and imposing
-one just for this matrix would presuppose Phase 2's encoding decision.
-
-**Decision:** `cellphone_access` (0.21) is the strongest linear correlate
-of the target among these features, consistent with 1.4's bivariate
-finding. `age_of_respondent`'s linear correlation is weak (0.02) despite
-the real relationship found in 1.5 — confirms that finding was non-linear
-(binned rates caught what a correlation coefficient misses), not spurious.
-No feature pair is strongly collinear (largest off-diagonal magnitude:
--0.26, `household_size`/`location_urban`), so multicollinearity isn't a
-concern for the `LogisticRegressionModel` baseline in Phase 3.
-
 ---
 
 ## Summary of decisions carried into Phase 2
